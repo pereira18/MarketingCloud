@@ -73,7 +73,7 @@ Evergage.init({
                 action: "home_page",
                 isMatch: () => {
                     return dataLayerLoad().then(() => {
-                        if( window.dataLayer.find(k=>k.event==='event')..event_name == 'event name'){
+                        if( window.dataLayer.find(k=>k.event==='event').event_name == 'event name'){
                             return true;
                         }    
 						            return false;
