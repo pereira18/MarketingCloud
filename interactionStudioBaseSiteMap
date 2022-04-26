@@ -1,0 +1,91 @@
+/* ========================== STARTER: get the context where the user is in ========================== */
+const getCurrentContext = () => {
+    let currentDomain = window.location.hostname;
+    if (currentDomain === "www.site.pt"){
+        return "site.pt"
+    }
+}
+const currentContext = getCurrentContext();
+
+/* ========================== STARTER: Definition of all SiteMap Configs ==================== */
+
+Evergage.init({
+    cookieDomain: currentContext
+}).then(() => {
+    
+    /* ========================== STARTER: Wait for DataLayer Load ============================= */
+    const dataLayerLoad = () => {
+        let intervalCount = 0;
+        return new Promise((resolve, reject) => {
+            const interval = setInterval(() => {
+                intervalCount += 1;
+                if (window.dataLayer) {
+                    clearInterval(interval);
+                    resolve(true);
+                } else if (intervalCount > 50) {
+                    clearInterval(interval);
+                    resolve(false);
+                }
+            }, 100);
+        });
+    };
+    /* ========================== STARTER: Intercept DataLayer Events ============================= */
+
+    if (currentContext === "site.pt") {
+        dataLayerLoad().then(() => {
+            dataLayer.push = function(...args) {
+                if (args[0]['event_name'] === "event_name") { 
+                    document.dispatchEvent(new CustomEvent(`EVG-${args[0]['event_name']}`, { cancelable: false, detail: args[0] } ));
+                }
+                dataLayer[dataLayer.length] = args[0]; 
+            } 
+        });
+    	
+      /* Custom Listener */
+    	if(window.dataLayer.find(k=>k.event==='event').event_name == 'event_name'){
+        document.addEventListener("EVG-event_name", function(event) {
+            Evergage.sendEvent({
+                action: "click_event_name",
+            });
+        });
+    	}
+    }
+
+    
+    /* ========================== STARTER: Definition of SiteMap Config ==================== */   
+
+    let sitePublicoConfig = {
+        global: {
+            /*onActionEvent: (actionEvent) => {
+                actionEvent.user = actionEvent.user || {};
+                actionEvent.user.attributes = actionEvent.user.attributes || {};
+                actionEvent.user.attributes.emailAddress = "teste@gmail.com"; 
+                return actionEvent;
+            },*/
+        },
+        pageTypeDefault: {
+            name: "default",
+        },
+        pageTypes: [
+            {
+                //home_page
+                name: "home_page",
+                action: "home_page",
+                isMatch: () => {
+                    return dataLayerLoad().then(() => {
+                        if( window.dataLayer.find(k=>k.event==='event')..event_name == 'event name'){
+                            return true;
+                        }    
+						            return false;
+                    });
+                },
+            },            
+        ]
+    };
+    
+    
+/* ========================== STARTER: Initialization of the correct SiteMap Config ========================== */    
+    if(currentContext === "site.pt") {
+        Evergage.initSitemap(sitePublicoConfig);
+    }
+});
