@@ -1,0 +1,13 @@
+%%[
+VAR @price, @euros, @cent
+SET @price = "10,25"
+
+IF IndexOf(@price, ",") > 0 THEN
+    SET @euros = Substring(@price,1,Subtract(IndexOf(@price,","),1))
+    SET @cent = Substring(@price,Add(IndexOf(@price,","),1))
+ENDIF
+
+]%%
+
+Euros: %%=v(@euros)=%%
+Centimos: %%=v(@cent)=%%
