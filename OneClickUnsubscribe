@@ -75,4 +75,41 @@ if not empty(@skey) then
 
    /* 4. define and associate BatchID to the request */
    if not empty(@batchid) then
-    set
+    set @lue_prop = CreateObject("APIProperty")
+    SetObjectProperty(@lue_prop, "Name", "BatchID")
+    SetObjectProperty(@lue_prop, "Value", @batchid)
+    AddObjectArrayItem(@lue, "Parameters", @lue_prop)
+   endif
+
+   /* 5. define and associate unsub reason to the request */
+   set @lue_prop = CreateObject("APIProperty")
+   SetObjectProperty(@lue_prop, "Name", "Reason")
+   SetObjectProperty(@lue_prop, "Value", @reason)
+   AddObjectArrayItem(@lue, "Parameters", @lue_prop)
+
+   /* finally, you invoke the request */
+   set @lue_statusCode = InvokeExecute(@lue, @overallStatus, @requestId)
+
+   /* extract messages from the response */
+   set @Response = Row(@lue_statusCode, 1)
+   set @Status = Field(@Response,"StatusMessage")
+   set @Error = Field(@Response,"ErrorCode")
+
+endif
+
+if @debug == 1 then
+  output(concat("<br>jid: ", @jid))
+  output(concat("<br>listid: ", @listid))
+  output(concat("<br>batchid: ", @batchid))
+  output(concat("<br>email: ", @email))
+  output(concat("<br>skey: ", @skey))
+  output(concat("<br>reason: ", @reason))
+  output(concat("<br>unsubscribeAll: ", @unsubscribeAll))
+  output(concat("<br>overallStatus: ", @overallStatus))
+  output(concat("<br>requestId: ", @requestId))
+  output(concat("<br>Response: ", @Response))
+  output(concat("<br>Status: ", @Status))
+  output(concat("<br>Error: ", @Error))
+endif
+
+]%%
