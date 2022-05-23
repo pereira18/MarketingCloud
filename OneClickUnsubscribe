@@ -1,0 +1,78 @@
+%%[
+
+var @debug
+var @jid
+var @listid
+var @batchid
+var @email
+var @skey
+var @reason
+var @unsubscribeAll
+
+set @debug = 0
+set @jid = AttributeValue("jobid")
+set @listid = AttributeValue("listid")
+set @batchid = AttributeValue("_JobSubscriberBatchID")
+set @email = AttributeValue("emailaddr")
+set @skey = AttributeValue("_subscriberkey")
+set @reason = "One-Click Unsubscribe"
+set @unsubscribeAll = RequestParameter("ua")
+
+/* if we know the subscriber */
+if not empty(@skey) then
+
+   var @lue
+   var @lue_prop
+   var @lue_statusCode
+   var @overallStatus
+   var @requestId
+   var @Response
+   var @Status
+   var @Error
+
+   /* if unsubscribing from all, then set the job, batch and listids to blank, effectively doing a global unsub */
+   if @unsubscribeAll == "1" then
+     set @jid = ""
+     set @listid = ""
+     set @batchid = ""
+   endif
+
+   /* create a request to inject an unsub event into the LogUnsubEvent platform table */
+   set @lue = CreateObject("ExecuteRequest")
+   SetObjectProperty(@lue,"Name","LogUnsubEvent")
+
+   /*
+    In order to invoke the request, we need to associate the following information with it to define the subscriber context and the job context:
+
+    1. Subscriber Key
+    2. JobId associated with the email send
+    3. ListID the email was sent to
+    4. BatchID the email was sent to
+    5. Reason for the unsub
+   */
+
+   /* 1. define and associate Subscriber Key to the request */
+   set @lue_prop = CreateObject("APIProperty")
+   SetObjectProperty(@lue_prop, "Name", "SubscriberKey")
+   SetObjectProperty(@lue_prop, "Value", @skey)
+   AddObjectArrayItem(@lue, "Parameters", @lue_prop)
+
+   /* 2. define and associate JobID to the request */
+   if not empty(@jid) then
+    set @lue_prop = CreateObject("APIProperty")
+    SetObjectProperty(@lue_prop, "Name", "JobID")
+    SetObjectProperty(@lue_prop, "Value", @jid)
+    AddObjectArrayItem(@lue, "Parameters", @lue_prop)
+   endif
+
+   /* 3. define and associate ListID to the request */
+   if not empty(@listid) then
+     set @lue_prop = CreateObject("APIProperty")
+     SetObjectProperty(@lue_prop, "Name", "ListID")
+     SetObjectProperty(@lue_prop, "Value", @listid)
+     AddObjectArrayItem(@lue, "Parameters", @lue_prop)
+   endif
+
+   /* 4. define and associate BatchID to the request */
+   if not empty(@batchid) then
+    set
