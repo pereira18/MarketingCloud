@@ -1,0 +1,38 @@
+
+%%[
+VAR @timesToShow, @valueA, @valueB
+
+SET @timesToShow = 5
+SET @valueA = "TEST1"
+SET @valueB = "TEST2"
+
+]%%
+
+<html>
+<head>
+
+<input id="timesToShow" type="hidden" value="%%=v(@timesToShow)=%%">
+<input id="valueA" type="hidden" value="%%=v(@valueA)=%%">
+<input id="valueB" type="hidden" value="%%=v(@valueB)=%%">
+
+<script>
+var timesToShow = document.getElementById("timesToShow").value;
+var valueA = document.getElementById("valueA").value
+var valueB = document.getElementById("valueB").value
+$(document).ready(function(){
+   for(var i = 0; i< timesToShow; i++)
+     $("#dvToAddContent").append("<div class='pack'><div class='justify-content'><strong>Teste " + valueA + valueB + "</strong></div><span>Text: test</span>");  
+});
+</script>
+
+<title>Page Title</title>
+</head>
+<body>
+
+<h1>My First Heading</h1>
+<div id="dvToAddContent">
+</div>
+
+</body>
+</html>
+
